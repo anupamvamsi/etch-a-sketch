@@ -1,35 +1,68 @@
 const container = document.querySelector("#container");
 const root = document.querySelector(":root");
 
-function setCSSVariable(variable, value) {
-  root.style.setProperty(variable, value);
-}
+createPixels(); // once page loads this is executed and the canvas is created
+
+let pixels = document.querySelectorAll(".pixel");
+
+// on mousedown, start adding color while mouse is moving,
+// and on mouseup, stop adding color
+pixels.forEach((pixel) => pixel.addEventListener("click", changeColor));
+pixels.forEach((pixel) => pixel.addEventListener("mousedown", addColorChange));
+pixels.forEach((pixel) => pixel.addEventListener("mouseup", removeColorChange));
+
+// if a drag action occurs and mouseup happens, then stop adding color
+pixels.forEach((pixel) => pixel.addEventListener("drag", removeColorChange));
+
+// prevent drag events from ever occurring
+pixels.forEach((pixel) =>
+  pixel.addEventListener("dragstart", (e) => e.preventDefault())
+);
+pixels.forEach((pixel) =>
+  pixel.addEventListener("drop", (e) => e.preventDefault())
+);
+
+// if while drawing the mouse moves out of the canvas, then stop adding color once the mouse is back inside the canvas
+container.addEventListener("mouseleave", removeColorChange);
 
 function createPixels() {
-  let numDivs = 16;
-  let canvasSize = "512px";
-  setCSSVariable("--numPixels", numDivs.toString());
-  setCSSVariable("--canvasSize", canvasSize);
-  // console.log(numDivs);
+  let numDivs = 16; // default value
 
+  // create pixels in each row
+  // the css prevents all pixelDivs from being
+  // created in one continuous row
   for (let i = 0; i < numDivs; i++) {
-    // console.log(1);
     for (let j = 0; j < numDivs; j++) {
-      // console.log(2);
       let pixelDiv = document.createElement("div");
-      // pixelDiv.textContent = i * numDivs + j + 1;
       pixelDiv.classList.add("pixel");
+      pixelDiv.setAttribute("draggable", "false");
+
       container.appendChild(pixelDiv);
     }
   }
 }
 
-createPixels();
-
-function changeColor(e) {
-  console.log(e.target.style.background);
-  e.target.style.background = "black";
+function mutateCanvasAndPixels(numPixels, canvasSize) {
+  setCSSVariable("--numPixels", numPixels.toString());
+  setCSSVariable("--canvasSize", canvasSize);
 }
 
-let pixelDivs = document.querySelectorAll(".pixel");
-pixelDivs.forEach((pixel) => pixel.addEventListener("mousemove", changeColor));
+function setCSSVariable(variable, value) {
+  root.style.setProperty(variable, value);
+}
+
+function addColorChange(e) {
+  console.log("mousedown");
+  pixels.forEach((pixel) => pixel.addEventListener("mousemove", changeColor));
+}
+
+function removeColorChange(e) {
+  console.log("mouseup/drag/mouseleave");
+  pixels.forEach((pixel) =>
+    pixel.removeEventListener("mousemove", changeColor)
+  );
+}
+
+function changeColor(e) {
+  e.target.style.background = "black";
+}

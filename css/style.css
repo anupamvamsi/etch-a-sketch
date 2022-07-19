@@ -9,7 +9,8 @@ html {
 }
 
 :root {
-  --numPixels: 64;
+  /* default values */
+  --numPixels: 16;
   --canvasSize: 512px;
   --canvasBorderSize: 2px;
 }
