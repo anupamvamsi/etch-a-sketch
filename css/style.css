@@ -1,0 +1,40 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+:root {
+  --numPixels: 64;
+  --canvasSize: 512px;
+  --canvasBorderSize: 2px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+}
+
+#container {
+  border: black solid var(--canvasBorderSize);
+  width: calc(var(--canvasSize) + 2 * var(--canvasBorderSize));
+  height: calc(var(--canvasSize) + 2 * var(--canvasBorderSize));
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pixel {
+  /* border: red dashed 1px; */
+  min-width: calc(var(--canvasSize) / var(--numPixels));
+  min-height: calc(var(--canvasSize) / var(--numPixels));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
