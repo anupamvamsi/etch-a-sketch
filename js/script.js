@@ -1,5 +1,7 @@
+// GLOBAL VARIABLES
 let currentColor = "none";
 let previousColor = currentColor;
+
 const container = document.querySelector("#container");
 const root = document.querySelector(":root");
 
@@ -7,33 +9,46 @@ const root = document.querySelector(":root");
 const brush = document.querySelector("#brush");
 const eraser = document.querySelector("#eraser");
 
-createPixels(); // once page loads this is executed and the canvas is created
+// CREATE CANVAS
+createPixels();
 let pixels = document.querySelectorAll(".pixel");
 
-// brush.addEventListener("click", setToDraw);
-eraser.addEventListener("click", setToErase);
-window.addEventListener("keypress", setToErase);
+// Let the tab/window listen to keypresses to activate the different tools
+window.addEventListener("keypress", activateTool);
 
-// function setToDraw(e) {
-//   if ((currentColor = "none")) {
-//     currentColor = "black";
-//   }
-// }
+// on clicking the tool buttons, activate them
+brush.addEventListener("click", setToDraw);
+eraser.addEventListener("click", setToErase);
+
+function activateTool(e) {
+  console.log(e.keyCode, String.fromCharCode(e.keyCode));
+  switch (e.keyCode) {
+    case 69: // E
+    case 101: // e
+      setToErase(e);
+      break;
+
+    case 66: // B
+    case 98: // b
+      setToDraw(e);
+
+    default:
+      break;
+  }
+}
+
+function setToDraw(e) {
+  currentColor = "black";
+
+  brush.classList.add("pressed");
+  eraser.classList.remove("pressed");
+}
 
 function setToErase(e) {
-  console.log(e.keyCode, String.fromCharCode(e.keyCode));
-  if (
-    e.type == "click" ||
-    e.keyCode == 101 ||
-    (currentColor == "none" && e.keyCode == 98)
-  ) {
-    let tempColor = previousColor;
-    previousColor = currentColor;
-    currentColor = tempColor;
+  currentColor = "none";
 
-    eraser.classList.toggle("pressed");
-    brush.classList.toggle("pressed");
-  }
+  eraser.classList.add("pressed");
+  brush.classList.remove("pressed");
 }
 
 function setCurrentColor(colorValue) {
@@ -99,6 +114,14 @@ function mutateCanvasAndPixels(numPixels, canvasSize) {
 
 function setCSSVariable(variable, value) {
   root.style.setProperty(variable, value);
+}
+
+// console.log(getCSSVariable("--numPixels"));
+
+function getCSSVariable(variable) {
+  let x = root.style.getPropertyValue(variable);
+  console.log(x);
+  return root.style.getPropertyValue(variable);
 }
 
 function addColorChange(e) {
