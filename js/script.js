@@ -7,6 +7,11 @@ const errorText = document.querySelector("#error-text");
 const container = document.querySelector("#container");
 const root = document.querySelector(":root");
 
+// PIXEL-MUTATOR
+const numberOfPixels = document.querySelector("#num-pixels");
+const plusButton = document.querySelector("#plus");
+const minusButton = document.querySelector("#minus");
+
 // DRAWING TOOLS
 const brush = document.querySelector("#brush");
 const rainbowBrush = document.querySelector("#rainbow");
@@ -14,8 +19,8 @@ const eraser = document.querySelector("#eraser");
 const reset = document.querySelector("#reset");
 
 // CREATE CANVAS
-createPixels();
-let pixels = document.querySelectorAll(".pixel");
+let pixels;
+canvasSetup();
 
 // **************************************************************************//
 // TOOLS' EVENT LISTENERS
@@ -49,6 +54,13 @@ function activateTool(e) {
     case 82: // R
     case 114: // r
       setToRainbowDraw(e);
+      break;
+
+    case 43: // +
+      mutateCanvasPlus(e);
+      break;
+    case 45: // -
+      mutateCanvasMinus(e);
       break;
 
     default:
@@ -120,24 +132,6 @@ function setRandomColor() {
 // MOUSE
 // *******//
 
-// on mousedown, start adding color while mouse is moving,
-// and on mouseup, stop adding color
-pixels.forEach((px) => px.addEventListener("click", changeColor));
-pixels.forEach((px) => px.addEventListener("mousedown", startColorChange));
-pixels.forEach((px) => px.addEventListener("mouseup", stopColorChange));
-
-// if a drag action occurs and mouseup happens, then stop adding color
-pixels.forEach((px) => px.addEventListener("drag", stopColorChange));
-
-// prevent drag events from ever occurring
-pixels.forEach((px) =>
-  px.addEventListener("dragstart", (e) => e.preventDefault())
-);
-pixels.forEach((px) => px.addEventListener("drop", (e) => e.preventDefault()));
-
-// if while drawing the mouse moves out of the canvas, then stop adding color once the mouse is back inside the canvas
-container.addEventListener("mouseleave", stopColorChange);
-
 // *******//
 // TOUCH
 // *******//
@@ -145,13 +139,46 @@ container.addEventListener("mouseleave", stopColorChange);
 // pixels.forEach((px) => px.addEventListener("touchend", stopColorChange));
 
 // **************************************************************************//
-// DRAWING FUNCTIONS
+// CANVAS CREATION / MUTATION EVENT LISTENERS
+// **************************************************************************//
+plusButton.addEventListener("click", mutateCanvasPlus);
+minusButton.addEventListener("click", mutateCanvasMinus);
+
+// **************************************************************************//
+// CANVAS CREATION / MUTATION FUNCTIONS
 // **************************************************************************//
 
-// create canvas of pixels
+function canvasSetup() {
+  createPixels();
+  pixels = document.querySelectorAll(".pixel");
+
+  // on mousedown, start adding color while mouse is moving,
+  // and on mouseup, stop adding color
+  pixels.forEach((px) => px.addEventListener("click", changeColor));
+  pixels.forEach((px) => px.addEventListener("mousedown", startColorChange));
+  pixels.forEach((px) => px.addEventListener("mouseup", stopColorChange));
+
+  // if a drag action occurs and mouseup happens, then stop adding color
+  pixels.forEach((px) => px.addEventListener("drag", stopColorChange));
+
+  // prevent drag events from ever occurring
+  pixels.forEach((px) =>
+    px.addEventListener("dragstart", (e) => e.preventDefault())
+  );
+  pixels.forEach((px) =>
+    px.addEventListener("drop", (e) => e.preventDefault())
+  );
+
+  // if while drawing the mouse moves out of the canvas, then stop adding color once the mouse is back inside the canvas
+  container.addEventListener("mouseleave", stopColorChange);
+}
+
+// create canvas
 function createPixels() {
   let numDivs = Number(getCSSVariable("--numPixels")); // default value
+  numberOfPixels.textContent = numDivs.toString();
 
+  container.textContent = "";
   // create pixels in each row
   // the css prevents all pixelDivs from being
   // created in one continuous row
@@ -165,12 +192,43 @@ function createPixels() {
     }
   }
 
-  currentColor = "#00756d";
+  currentColor = "#00756d"; // default
 }
 
-function mutateCanvasAndPixels(numPixels, canvasSize) {
+function mutatePixels(numPixels) {
   setCSSVariable("--numPixels", numPixels.toString());
-  setCSSVariable("--canvasSize", canvasSize);
+}
+
+function mutateCanvasPlus(e) {
+  let numPixels = getCSSVariable("--numPixels");
+
+  if (isEmpty(numPixels)) {
+    // errorText.textContent = "Error in changing number of pixels of canvas.";
+    return;
+  }
+
+  if (numPixels <= 32) {
+    numPixels *= 2;
+    setCSSVariable("--numPixels", numPixels);
+    canvasSetup();
+    numberOfPixels.textContent = numPixels.toString();
+  }
+}
+
+function mutateCanvasMinus(e) {
+  let numPixels = getCSSVariable("--numPixels");
+
+  if (isEmpty(numPixels)) {
+    errorText.textContent = "Error in changing number of pixels of canvas.";
+    return;
+  }
+
+  if (numPixels > 1) {
+    numPixels /= 2;
+    setCSSVariable("--numPixels", numPixels);
+    canvasSetup();
+    numberOfPixels.textContent = numPixels.toString();
+  }
 }
 
 function setCSSVariable(variable, value) {
@@ -193,6 +251,10 @@ function getCSSVariable(variable) {
     }
   }
 }
+
+// **************************************************************************//
+// DRAWING FUNCTIONS
+// **************************************************************************//
 
 function startColorChange(e) {
   pixels.forEach((px) => px.addEventListener("mousemove", changeColor));
