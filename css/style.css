@@ -38,6 +38,7 @@ button:hover {
 #pixel-adjuster {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2rem;
 }
 
@@ -58,6 +59,16 @@ button:hover {
   height: 4rem;
 
   font-size: 2rem;
+}
+
+#num-pixels {
+  border: none;
+
+  font-size: 3rem;
+  text-align: center;
+
+  width: 5rem;
+  margin: 0;
 }
 
 /* CANVAS */
