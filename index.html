@@ -8,8 +8,21 @@
   </head>
 
   <body>
-    <div id="container"></div>
-    <button id="brush" class="buttons pressed">Brush (b)</button>
-    <button id="eraser" class="buttons">Eraser (e)</button>
+    <h1>Etch-A-Sketch</h1>
+    <p id="error-text"></p>
+    <div id="content">
+      <div id="pixel-adjuster">
+        <button id="plus" class="adjuster">+</button>
+        <button id="minus" class="adjuster">-</button>
+      </div>
+      <div id="container"></div>
+      <div id="tools">
+        <button id="brush" class="buttons pressed">Brush (b)</button>
+        <button id="rainbow" class="buttons">Rainbow (r)</button>
+        <button id="eraser" class="buttons">Eraser (e)</button>
+        <button id="reset" class="buttons">Reset</button>
+      </div>
+    </div>
+    <p>512px × 512px</p>
   </body>
 </html>
