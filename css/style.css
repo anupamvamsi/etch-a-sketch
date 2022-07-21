@@ -18,12 +18,53 @@ html {
 body {
   display: flex;
   flex-direction: column;
-
   align-items: center;
+
+  font-family: "Courier New", Courier, monospace;
+  color: #56d6ce;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
+#content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* CANVAS SIZE SETTER */
+#pixel-adjuster {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.adjuster,
+.buttons {
+  border: 0px;
+  border-radius: 10%;
+
+  font-family: "Courier New", Courier, monospace;
+  color: #00756d;
+  text-align: center;
+
+  background-color: #c9eeeb;
+}
+
+.adjuster {
+  width: 4rem;
+  height: 4rem;
+
+  font-size: 2rem;
+}
+
+/* CANVAS */
 #container {
-  border: black solid var(--canvasBorderSize);
+  border: #56d6ce solid var(--canvasBorderSize);
+
+  /* account for the border on all four sides */
   width: calc(var(--canvasSize) + 2 * var(--canvasBorderSize));
   height: calc(var(--canvasSize) + 2 * var(--canvasBorderSize));
 
@@ -32,7 +73,6 @@ body {
 }
 
 .pixel {
-  /* border: red dashed 1px; */
   min-width: calc(var(--canvasSize) / var(--numPixels));
   min-height: calc(var(--canvasSize) / var(--numPixels));
   display: flex;
@@ -40,17 +80,22 @@ body {
   align-items: center;
 }
 
-.buttons {
-  margin: 2rem;
-  /* padding: 4rem; */
-  /* width: 2rem;
-  height: 2rem;
-  border-radius: 50%; */
+/* TOOLS */
+#tools {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
 
-  background-color: lightgray;
-  font-size: 2rem;
+.buttons {
+  width: 6.5rem;
+  height: 6.5rem;
+
+  border-radius: 10%;
+
+  font-size: 1.3rem;
 }
 
 .pressed {
-  background-color: gray;
+  background-color: #56d6ce;
 }
