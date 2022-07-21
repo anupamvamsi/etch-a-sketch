@@ -1,4 +1,5 @@
 // GLOBAL VARIABLES
+let coloringState = "monochrome";
 let currentColor = "none";
 let previousColor = currentColor;
 
@@ -26,7 +27,6 @@ eraser.addEventListener("click", setToErase);
 reset.addEventListener("click", resetCanvas);
 
 function activateTool(e) {
-  console.log(e.keyCode, String.fromCharCode(e.keyCode));
   switch (e.keyCode) {
     case 69: // E
     case 101: // e
@@ -49,6 +49,7 @@ function activateTool(e) {
 }
 
 function setToDraw(e) {
+  coloringState = "monochrome";
   currentColor = "#00756d";
 
   brush.classList.add("pressed");
@@ -57,8 +58,8 @@ function setToDraw(e) {
 }
 
 function setToRainbowDraw(e) {
+  coloringState = "multichrome";
   setRandomColor();
-  // console.log(currentColor);
 
   rainbow.classList.add("pressed");
   brush.classList.remove("pressed");
@@ -66,6 +67,7 @@ function setToRainbowDraw(e) {
 }
 
 function setToErase(e) {
+  coloringState = "monochrome";
   currentColor = "none";
 
   eraser.classList.add("pressed");
@@ -93,12 +95,9 @@ function setRandomColor() {
   let r = random(0, 255);
   let g = random(0, 255);
   let b = random(0, 255);
-  console.log(r);
-  console.log(g);
-  console.log(b);
   let color = "rgb(" + r + ", " + g + ", " + b + ")";
-  console.log("Color: ", color);
-  setCurrentColor(color.toString());
+
+  setCurrentColor(color);
 }
 
 // **************************************************************************//
@@ -108,11 +107,13 @@ function setRandomColor() {
 // on mousedown, start adding color while mouse is moving,
 // and on mouseup, stop adding color
 pixels.forEach((pixel) => pixel.addEventListener("click", changeColor));
-pixels.forEach((pixel) => pixel.addEventListener("mousedown", addColorChange));
-pixels.forEach((pixel) => pixel.addEventListener("mouseup", removeColorChange));
+pixels.forEach((pixel) =>
+  pixel.addEventListener("mousedown", startColorChange)
+);
+pixels.forEach((pixel) => pixel.addEventListener("mouseup", stopColorChange));
 
 // if a drag action occurs and mouseup happens, then stop adding color
-pixels.forEach((pixel) => pixel.addEventListener("drag", removeColorChange));
+pixels.forEach((pixel) => pixel.addEventListener("drag", stopColorChange));
 
 // prevent drag events from ever occurring
 pixels.forEach((pixel) =>
@@ -123,7 +124,7 @@ pixels.forEach((pixel) =>
 );
 
 // if while drawing the mouse moves out of the canvas, then stop adding color once the mouse is back inside the canvas
-container.addEventListener("mouseleave", removeColorChange);
+container.addEventListener("mouseleave", stopColorChange);
 
 // **************************************************************************//
 // DRAWING FUNCTIONS
@@ -175,17 +176,20 @@ function getCSSVariable(variable) {
   }
 }
 
-function addColorChange(e) {
+function startColorChange(e) {
   pixels.forEach((pixel) => pixel.addEventListener("mousemove", changeColor));
 }
 
-function removeColorChange(e) {
+function stopColorChange(e) {
   pixels.forEach((pixel) =>
     pixel.removeEventListener("mousemove", changeColor)
   );
 }
 
 function changeColor(e) {
+  if (coloringState == "multichrome") {
+    setRandomColor();
+  }
   e.target.style.background = getCurrentColor();
 }
 
