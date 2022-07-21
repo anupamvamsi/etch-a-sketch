@@ -17,6 +17,10 @@ const reset = document.querySelector("#reset");
 createPixels();
 let pixels = document.querySelectorAll(".pixel");
 
+// **************************************************************************//
+// TOOLS' EVENT LISTENERS
+// **************************************************************************//
+
 // Let the tab/window listen to keypresses to activate the different tools
 window.addEventListener("keypress", activateTool);
 
@@ -25,6 +29,10 @@ brush.addEventListener("click", setToDraw);
 rainbow.addEventListener("click", setToRainbowDraw);
 eraser.addEventListener("click", setToErase);
 reset.addEventListener("click", resetCanvas);
+
+// **************************************************************************//
+// TOOLS' FUNCTIONS
+// **************************************************************************//
 
 function activateTool(e) {
   switch (e.keyCode) {
@@ -83,6 +91,10 @@ function resetCanvas(e) {
   });
 }
 
+// **************************************************************************//
+// COLORING FUNCTIONS
+// **************************************************************************//
+
 function setCurrentColor(colorValue) {
   currentColor = colorValue;
 }
@@ -104,27 +116,33 @@ function setRandomColor() {
 // DRAWING EVENT LISTENERS
 // **************************************************************************//
 
+// *******//
+// MOUSE
+// *******//
+
 // on mousedown, start adding color while mouse is moving,
 // and on mouseup, stop adding color
-pixels.forEach((pixel) => pixel.addEventListener("click", changeColor));
-pixels.forEach((pixel) =>
-  pixel.addEventListener("mousedown", startColorChange)
-);
-pixels.forEach((pixel) => pixel.addEventListener("mouseup", stopColorChange));
+pixels.forEach((px) => px.addEventListener("click", changeColor));
+pixels.forEach((px) => px.addEventListener("mousedown", startColorChange));
+pixels.forEach((px) => px.addEventListener("mouseup", stopColorChange));
 
 // if a drag action occurs and mouseup happens, then stop adding color
-pixels.forEach((pixel) => pixel.addEventListener("drag", stopColorChange));
+pixels.forEach((px) => px.addEventListener("drag", stopColorChange));
 
 // prevent drag events from ever occurring
-pixels.forEach((pixel) =>
-  pixel.addEventListener("dragstart", (e) => e.preventDefault())
+pixels.forEach((px) =>
+  px.addEventListener("dragstart", (e) => e.preventDefault())
 );
-pixels.forEach((pixel) =>
-  pixel.addEventListener("drop", (e) => e.preventDefault())
-);
+pixels.forEach((px) => px.addEventListener("drop", (e) => e.preventDefault()));
 
 // if while drawing the mouse moves out of the canvas, then stop adding color once the mouse is back inside the canvas
 container.addEventListener("mouseleave", stopColorChange);
+
+// *******//
+// TOUCH
+// *******//
+// pixels.forEach((px) => px.addEventListener("touchstart", startColorChange));
+// pixels.forEach((px) => px.addEventListener("touchend", stopColorChange));
 
 // **************************************************************************//
 // DRAWING FUNCTIONS
@@ -177,13 +195,11 @@ function getCSSVariable(variable) {
 }
 
 function startColorChange(e) {
-  pixels.forEach((pixel) => pixel.addEventListener("mousemove", changeColor));
+  pixels.forEach((px) => px.addEventListener("mousemove", changeColor));
 }
 
 function stopColorChange(e) {
-  pixels.forEach((pixel) =>
-    pixel.removeEventListener("mousemove", changeColor)
-  );
+  pixels.forEach((px) => px.removeEventListener("mousemove", changeColor));
 }
 
 function changeColor(e) {
