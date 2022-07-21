@@ -2,12 +2,15 @@
 let currentColor = "none";
 let previousColor = currentColor;
 
+const errorText = document.querySelector("#error-text");
 const container = document.querySelector("#container");
 const root = document.querySelector(":root");
 
 // DRAWING TOOLS
 const brush = document.querySelector("#brush");
+const rainbowBrush = document.querySelector("#rainbow");
 const eraser = document.querySelector("#eraser");
+const reset = document.querySelector("#reset");
 
 // CREATE CANVAS
 createPixels();
@@ -18,7 +21,9 @@ window.addEventListener("keypress", activateTool);
 
 // on clicking the tool buttons, activate them
 brush.addEventListener("click", setToDraw);
+rainbow.addEventListener("click", setToRainbowDraw);
 eraser.addEventListener("click", setToErase);
+reset.addEventListener("click", resetCanvas);
 
 function activateTool(e) {
   console.log(e.keyCode, String.fromCharCode(e.keyCode));
@@ -31,6 +36,12 @@ function activateTool(e) {
     case 66: // B
     case 98: // b
       setToDraw(e);
+      break;
+
+    case 82: // R
+    case 114: // r
+      setToRainbowDraw(e);
+      break;
 
     default:
       break;
@@ -38,9 +49,19 @@ function activateTool(e) {
 }
 
 function setToDraw(e) {
-  currentColor = "black";
+  currentColor = "#00756d";
 
   brush.classList.add("pressed");
+  rainbow.classList.remove("pressed");
+  eraser.classList.remove("pressed");
+}
+
+function setToRainbowDraw(e) {
+  setRandomColor();
+  // console.log(currentColor);
+
+  rainbow.classList.add("pressed");
+  brush.classList.remove("pressed");
   eraser.classList.remove("pressed");
 }
 
@@ -49,6 +70,15 @@ function setToErase(e) {
 
   eraser.classList.add("pressed");
   brush.classList.remove("pressed");
+  rainbow.classList.remove("pressed");
+}
+
+function resetCanvas(e) {
+  pixels.forEach((pixel) => {
+    if (pixel.style.background) {
+      pixel.style.background = "none";
+    }
+  });
 }
 
 function setCurrentColor(colorValue) {
@@ -57,6 +87,18 @@ function setCurrentColor(colorValue) {
 
 function getCurrentColor() {
   return currentColor;
+}
+
+function setRandomColor() {
+  let r = random(0, 255);
+  let g = random(0, 255);
+  let b = random(0, 255);
+  console.log(r);
+  console.log(g);
+  console.log(b);
+  let color = "rgb(" + r + ", " + g + ", " + b + ")";
+  console.log("Color: ", color);
+  setCurrentColor(color.toString());
 }
 
 // **************************************************************************//
@@ -89,7 +131,7 @@ container.addEventListener("mouseleave", removeColorChange);
 
 // create canvas of pixels
 function createPixels() {
-  let numDivs = 16; // default value
+  let numDivs = Number(getCSSVariable("--numPixels")); // default value
 
   // create pixels in each row
   // the css prevents all pixelDivs from being
@@ -104,7 +146,7 @@ function createPixels() {
     }
   }
 
-  currentColor = "black";
+  currentColor = "#00756d";
 }
 
 function mutateCanvasAndPixels(numPixels, canvasSize) {
@@ -116,12 +158,21 @@ function setCSSVariable(variable, value) {
   root.style.setProperty(variable, value);
 }
 
-// console.log(getCSSVariable("--numPixels"));
-
 function getCSSVariable(variable) {
-  let x = root.style.getPropertyValue(variable);
-  console.log(x);
-  return root.style.getPropertyValue(variable);
+  let x = getComputedStyle(document.body);
+
+  if (x) {
+    let y = x.getPropertyValue(variable);
+
+    // for some unknown reason, an empty string is being returned sometimes
+    if (!isEmpty(y)) {
+      return y;
+    } else {
+      errorText.textContent =
+        "Error in loading canvas. Creating a 16×16 canvas.";
+      return "16";
+    }
+  }
 }
 
 function addColorChange(e) {
@@ -136,4 +187,19 @@ function removeColorChange(e) {
 
 function changeColor(e) {
   e.target.style.background = getCurrentColor();
+}
+
+// **************************************************************************//
+// UTILITY FUNCTIONS
+// **************************************************************************//
+
+function isEmpty(str) {
+  if (str === "") {
+    return true;
+  }
+  return false;
+}
+
+function random(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
